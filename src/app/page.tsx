@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, use, useRef } from "react"
 import {
     Mate_SCFont,
     UbuntuFont,
@@ -12,8 +12,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
     motion,
-    AnimatePresence
+    AnimatePresence,
+    useViewportScroll,
+    useScroll
 } from "framer-motion"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger"
+import Lenis from '@studio-freight/lenis'
 
 const hoverAnimation = "relative after:w-full after:min-h-[4px] after:scale-x-1  after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform center "
 
@@ -26,9 +31,91 @@ const TextAfterAnimiation = ({text, className}: {text: string, className: string
     )
 }
 
-function Header() {
+function Header({bodyRef}: {bodyRef: any}) {
+    const [open, setOpen] = useState(false);
+    const firstLine = useRef(null);
+    const secondLine = useRef(null);
+    const thirdLine = useRef(null);
+    const handleOpen = () => {
+        if(firstLine.current == null || secondLine.current == null || thirdLine.current == null || bodyRef.current == null) return;
+        secondLine.current.style.opacity = 0;
+        firstLine.current.style.transform = "rotate(45deg)  translate(7px,8px)";
+        thirdLine.current.style.transform = "rotate(-45deg) translate(7px,-8px)";
+        firstLine.current.style.backgroundColor = "#000";
+        thirdLine.current.style.backgroundColor = "#000";
+        bodyRef.current.style.overflowY = "hidden";
+        bodyRef.current.style.height = "100vh";
+        setOpen(true);
+
+    }
+    const handleClose = () => {
+        if(firstLine.current == null || secondLine.current == null || thirdLine.current == null || bodyRef.current == null) return;
+        secondLine.current.style.opacity = 1;
+        firstLine.current.style.transform = "rotate(0deg) translate(0px,0px)";
+        thirdLine.current.style.transform = "rotate(0deg) translate(0px,0px)";
+        firstLine.current.style.backgroundColor = "#FFF";
+        thirdLine.current.style.backgroundColor = "#FFF";
+        bodyRef.current.style.overflowY = "visible";
+        bodyRef.current.style.height = "auto";
+        setOpen(false);
+    }
+    const menuAnimation = {
+        initial: {
+            height: "0px",
+        },
+        animate: {
+            height: "100%",
+            transition: {
+                duration: 1,
+                ease: "easeInOut"
+            }
+        },
+        exit: {
+            height: "0px",
+            transition: {
+                ease: "easeInOut"
+            }
+        }
+    }
+    const menuAnimation1 = {
+        initial: {
+            height: "0px",
+        },
+        animate: {
+            height: "100%",
+            transition: {
+                duration: 1.5,
+                ease: "easeInOut"
+            }
+        },
+        exit: {
+            height: "0px",
+            transition: {
+                ease: "easeInOut"
+            }
+        }
+    }
+    const menuAnimation2= {
+        initial: {
+            height: "0px",
+        },
+        animate: {
+            height: "100%",
+            transition: {
+                duration: 2,
+                ease: "easeInOut"
+            }
+        },
+        exit: {
+            height: "0px",
+            transition: {
+                ease: "easeInOut"
+            }
+        }
+    }
+
     return (
-        <div className="absolute w-full z-10" >
+        <div className="absolute w-full  z-[100]" >
             <div className=" flex justify-between items-center py-[20px] px-[50px] text-[#FFF] x:max-lg:px-[20px]">
                 <p style={Mate_SCFont.style}  className="text-6xl self-end x:max-lg:self-center x:max-lg:text-5xl">
                     Logo
@@ -39,12 +126,94 @@ function Header() {
                     <li style={UbuntuFont.style} className="text-[#FFF] cursor-pointer font-[400] text-base uppercase relative after:w-full after:min-h-[4px] after:scale-x-0 hover:after:scale-x-100 after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform cente">Proyectos</li>
                     <li style={UbuntuFont.style} className="text-[#FFF] cursor-pointer font-[400] text-base uppercase relative after:w-full after:min-h-[4px] after:scale-x-0 hover:after:scale-x-100 after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform cente">Servicios</li>
                 </ul>
-                <div className="flex flex-col justify-center items-center gap-[7px] self-end x:max-lg:self-center">
-                    <div className="w-[45px] h-[4px] bg-[#FFF] rounded-md"></div>
-                    <div className="w-[35px] h-[4px] bg-[#FFF] rounded-md"></div>
-                    <div className="w-[45px] h-[4px] bg-[#FFF] rounded-md"></div>
+                {
+
+                    <div className="right-5 flex-col justify-center items-center z-50 gap-[7px] self-end flex cursor-pointer opacity-0" >
+                        <div className="w-[45px] h-[3.5px]"></div>
+                        <div  className="w-[35px] h-[3.5px]"></div>
+                        <div className="w-[45px] h-[3.5px]"></div>
+                    </div>
+                }
+                <div className={` right-5 flex-col justify-center items-center z-50 gap-[7px] self-end flex cursor-pointer ${open ? 'fixed' : 'absolute'}`} onClick={() => open ? handleClose() :handleOpen()}>
+                    <div ref={firstLine} className="w-[45px] h-[3.5px] bg-[#FFF]  transition-all duration-500 rounded-md"></div>
+                    <div ref={secondLine} className="w-[35px] h-[3.5px] bg-[#FFF] transition-all duration-150 rounded-md"></div>
+                    <div ref={thirdLine} className="w-[45px] h-[3.5px] bg-[#FFF]  transition-all duration-500 rounded-md"></div>
                 </div>
             </div>
+            {
+                open && (
+                    <div className="flex flex-col   fixed top-0 left-0 w-full h-full">
+                        <div style={Mate_SCFont.style}  className=" w-full py-[20px] px-[50px] text-6xl  x:max-lg:self-center x:max-lg:text-5xl bg-[#FFF]">
+                                Logo
+                        </div>
+                        <div className=" w-full flex h-full justify-between text-[#000] x:max-lg:px-[20px]">
+                            <motion.div
+                                variants={menuAnimation}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                className="h-full py-[20px] px-[50px] flex flex-col w-1/3  bg-white gap-[7px] x:max-lg:self-center  overflow-hidden">
+                                <p className="pt-10 text-base font-medium uppercase" style={RubikFont.style}>
+                                    Products
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    All
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Men
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    women
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    kids
+                                </p>
+                            </motion.div>
+                            <motion.div
+                                variants={menuAnimation1}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                 className="h-full py-[20px] px-[50px] flex flex-col w-1/3  bg-white gap-[7px]  x:max-lg:self-center  overflow-hidden">
+                                <p className="pt-10 text-base font-medium uppercase" style={RubikFont.style}>
+                                    Seasons
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Summer
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Winter
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Autumn
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Spring
+                                </p>
+                            </motion.div>
+                            <motion.div
+                                variants={menuAnimation2}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit" className=" h-full py-[20px] px-[50px] flex flex-col w-1/3  bg-white gap-[7px]  x:max-lg:self-center  overflow-hidden">
+                                <p className="pt-10 text-base font-medium uppercase" style={RubikFont.style}>
+                                    About
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Contact
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Location
+                                </p>
+                                <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                                    Careers
+                                </p>
+                            </motion.div>
+                        </div>
+                    </div>
+                )
+
+            }
         </div>
     )
 }
@@ -157,7 +326,7 @@ const Gallery = ({url, isVideo, page, index}: {url: string, isVideo: boolean, pa
                             autoPlay
                             loop
                             muted
-                            className="object-cover w-full h-full absolute top-0 left-0 z-0 bg-black opacity-90 select-none"
+                            className="object-cover w-full h-full absolute top-0 left-0 z-0 bg-black opacity-75 select-none "
                             draggable="false"
                             variants={imagAnimation}
                             initial="initial"
@@ -168,7 +337,7 @@ const Gallery = ({url, isVideo, page, index}: {url: string, isVideo: boolean, pa
                         />
                     )
                 }
-                <div className="z-10 w-full px-[50px]">
+                <div className="z-10 w-full px-[50px] flex flex-col justify-center items-center">
                     <motion.p
                         className="text-[#FFF] text-center z-10 text-xl pl-[8px] x:max-lg:text-lg x:max-sm:text-base font-light"
                         style={Noto_Sans_TCFont.style}
@@ -180,7 +349,7 @@ const Gallery = ({url, isVideo, page, index}: {url: string, isVideo: boolean, pa
                         Bienvenido a Espacio Home Design
                     </motion.p>
                     <motion.p
-                        className="w-full text-center text-[#FFF] z-10 text-9xl x:max-lg:text-6xl  font-bold uppercase x:max-sm:text-4xl"
+                        className="max-w-[1700px] text-center text-[#FFF] z-10 text-9xl x:max-lg:text-6xl  font-bold uppercase x:max-sm:text-4xl"
                         style={Mate_SCFont.style}
                         variants={bodyAnimation}
                         initial="initial"
@@ -228,7 +397,7 @@ const HeadGallery = () => {
       }, []);
 
     return (
-        <div className="relative bg-black">
+        <div className="relative bg-black overflow-hidden">
             <motion.div 
                 className="flex"
                 animate={{ x: -page * windWidth}}
@@ -244,9 +413,9 @@ const HeadGallery = () => {
                 <Gallery page={page} index={2} url="/Gallery/G3.mp4" isVideo={true}/>
             </motion.div>
             <div className="absolute bottom-7 left-7 z-10 flex gap-3">
-                <div onClick={()=> setPage(0)} style={{opacity: page == 0 ?  1: 0.5}} className="w-[70px] rounded-xl h-[5px] bg-[#FFF] cursor-pointer"></div>
-                <div onClick={()=> setPage(1)} style={{opacity: page == 1 ? 1 : 0.5}} className="w-[70px] rounded-xl h-[5px] bg-[#FFF] cursor-pointer"></div>
-                <div onClick={()=> setPage(2)} style={{opacity: page == 2 ? 1 : 0.5}} className="w-[70px] rounded-xl h-[5px] bg-[#FFF] cursor-pointer"></div>
+                <div onClick={()=> setPage(0)} style={{opacity: page == 0 ?  1: 0.5}} className="w-[70px] rounded-xl h-[6px] bg-[#FFF] cursor-pointer"></div>
+                <div onClick={()=> setPage(1)} style={{opacity: page == 1 ? 1 : 0.5}} className="w-[70px] rounded-xl h-[6px] bg-[#FFF] cursor-pointer"></div>
+                <div onClick={()=> setPage(2)} style={{opacity: page == 2 ? 1 : 0.5}} className="w-[70px] rounded-xl h-[6px] bg-[#FFF] cursor-pointer"></div>
             </div>
         </div>
     );
@@ -255,7 +424,7 @@ const HeadGallery = () => {
 function ImageInfo({url}: {url: string}) {
     const [hover, setHover] = useState(false)
     return (
-        <div className="flex gap-5 max-w-md  h-fit cursor-pointer "
+        <div className="flex gap-5 max-w-md  h-fit cursor-pointer  "
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         >
@@ -505,7 +674,7 @@ function MyLine({url,text}: {url: string, text: string}) {
 
 function Body() {
     return (
-        <div className="w-full px-[50px] flex flex-col gap-40 items-center justify-center pt-[100px] no-scrollbar x:max-sm:px-[10px]">
+        <div className=" w-full px-[50px] flex flex-col gap-40 items-center justify-center pt-[100px] no-scrollbar x:max-sm:px-[10px]">
             <div className=" grid grid-cols-2 gap-16 xl:grid-cols-3 md:grid-cols-2 [&>*:nth-child(3)]:sm:max-xl:col-span-2 items-center justify-center x:max-sm:grid-cols-1">
                     <ImageInfo url="/Gallery/I1.jpg"/>
                     <ImageInfo url="/Gallery/I2.jpg"/>
@@ -514,7 +683,7 @@ function Body() {
                     <ImageGallery url="/Gallery/S2.jpg" header={"Interiorismo"} type={"Lorem ipsum voluptatum."}/>
                     <ImageGallery url="/Gallery/S3.jpg" header={"Proyectos"} type={"Lorem ipsum dolvoluptatum."} />
             </div>
-            <div className="w-full flex flex-col justify-center items-center gap-5">
+            <div className=" w-full flex flex-col justify-center items-center gap-5">
                 <MyLine url={"/Gallery/L1.jpg"} text={"Heritage ,"}/>
                 <MyLine url={"/Gallery/L2.jpg"} text={"Design And"}/>
                 <MyLine url={"/Gallery/L3.jpg"} text={"Commitment Of"}/>
@@ -524,16 +693,194 @@ function Body() {
     )
 }
 
+function SliderImage({url, index}: {url: string, index: number}) {
+    return (
+        <div className="min-w-[350px] h-[510px] bg-black relative overflow-hidden">
+            <Image width={1920} height={1080} src={url} alt="" className="object-cover w-full h-full"/>
+        </div>
+    )
+}
+
+function BroductScroll() {
+    const startRef = useRef<any>(null);
+    const animRef = useRef<any>(null);
+
+    const data = [
+        "/Slider/pexels-anna-shvets-5262741.jpg",
+        "/Slider/pexels-j-sarkar-991509.jpg",
+        "/Slider/pexels-jordan-bergendahl-13219989.jpg",
+        "/Slider/pexels-oliver-sjöström-1103828.jpg",
+        "/Slider/pexels-rdne-stock-project-8223913.jpg",
+        "/Slider/pexels-rdne-stock-project-8223952.jpg",
+        "/Slider/pexels-rdne-stock-project-8223957.jpg",
+        "/Slider/pexels-rdne-stock-project-8224648.jpg",
+        "/Slider/pexels-rdne-stock-project-8223952.jpg",
+    ]
+    useEffect(() => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: startRef.current,
+            start: 'top center',
+            end: 'bottom center',
+            scrub: true,
+          },
+        });
+    
+        tl.to(animRef.current, {
+          x: "-54%",
+          y: "50%",
+          ease: 'none',
+          duration: 1,
+        });
+        return () => {
+            ScrollTrigger.getAll().forEach((trigger) => {
+                trigger.kill();
+            });
+            };  
+    }, [])
+
+
+    return (
+        <div ref={startRef} className="w-full h-[770px] px-[50px] mt-[150px] overflow-x-hidden  overflow-y-visible">
+                <motion.div className="flex w-fit h-fit gap-[50px]"
+                ref={animRef}
+                >
+                    {
+                        data.map((item, index) => {
+                            return (
+                                <SliderImage key={index} url={item} index={index}/>
+                            )
+                        })
+                    }
+                </motion.div>
+        </div>
+    )
+}
+
+function TextErase({text, len, index}: {text: string, len: number, index: number}) {
+    const refChar = useRef<any>(null);
+    const delay = (len - index) * 0.5;
+
+    const textAnimation = {
+        initial: {
+            opacity: 1,
+        },
+        animate: {
+            scaleY: 0,
+            transition: {
+                duration: 0,
+                ease: "easeInOut",
+                delay: delay
+            }
+        },
+    }
+
+
+    return (
+        <motion.span ref={refChar}
+            variants={textAnimation}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+        >
+            {text}
+        </motion.span>
+    );
+}
 
 export default function Home() {
+    const bodyRef = useRef<any>(null);
+    useEffect( () => {
+
+        const lenis = new Lenis()
+    
+        lenis.on('scroll', ScrollTrigger.update)
+        
+        gsap.ticker.add((time)=>{
+          lenis.raf(time * 1000)
+        })
+        
+        gsap.ticker.lagSmoothing(0)
+    
+      }, [])
     return (
-        <div className="w-full cursor-default relative  min-h-screen overflow-x-hidden">
-            <Header/>
+        <div className="w-full cursor-default relative  min-h-screen overflow-x-hidde" ref={bodyRef}>
+            <Header bodyRef={bodyRef} />
             <HeadGallery/>
             <Body/>
-            <div className="h-[100vh]">
-
+            <BroductScroll/>
+            <div className="h-[50vh] w-[80%] relative left-1/2 -translate-x-1/2 mt-14 bg-black flex justify-center items-center">
+                <Image width={1920} height={1080} src={"/shop.jpg"} alt="" className="absolute z-0 top-0 left-0 object-cover w-full h-full  opacity-75 grayscale-[0.2]"/>
+                <p className="text-white text-8xl font-medium uppercase z-10 opacity-90" style={Noto_Sans_TCFont.style}>
+                    Shop now
+                </p>
             </div>
+            <div className="mt-16 pb-[50px] flex justify-around px-[100px]">
+                <div className="category flex flex-col justify-start gap-3 ">
+                    <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        men
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        women
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        kids
+                    </p>
+                </div>
+                <div className="seasons flex flex-col justify-start gap-3">
+                    <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        summer
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        winter
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        autumn
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        spring
+                    </p>
+                </div>
+                <div className=" flex flex-col justify-start gap-3">
+                    <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        products
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        best sellers
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        new
+                    </p>
+
+                </div>
+                <div className="info flex flex-col justify-center gap-3">
+                    <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        about
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        contact
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        location
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        careers
+                    </p>
+                </div>
+            </div>
+            <div className=" w-full z-10" >
+            <footer className=" flex justify-between items-center py-[20px] px-[50px] text-[#FFF] x:max-lg:px-[20px] bg-black">
+                <p style={Mate_SCFont.style}  className="text-4xl self-end x:max-lg:self-center x:max-lg:text-5xl">
+                    Logo
+                </p>
+                {/* add copy right */}
+                <p className="text-[#FFF] cursor-pointer font-[400] text-base uppercase relative after:w-full after:min-h-[4px] after:scale-x-0 hover:after:scale-x-100 after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform cente">
+                    © 2023 Achraf Sabbar
+                </p>
+            </footer>
+        </div>
         </div>
     )
 }
