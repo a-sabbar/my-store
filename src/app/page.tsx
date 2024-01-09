@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, use, useRef } from "react"
+import React, { useState, useEffect, use, useRef} from "react"
 import {
     Mate_SCFont,
     UbuntuFont,
@@ -9,16 +9,17 @@ import {
     CairoFont
 } from "../Fonts/Fonts"
 import Image from 'next/image'
-import Link from 'next/link'
 import {
     motion,
     AnimatePresence,
     useViewportScroll,
-    useScroll
+    useScroll,
+    delay
 } from "framer-motion"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger"
 import Lenis from '@studio-freight/lenis'
+import Link from "next/link"
 
 const hoverAnimation = "relative after:w-full after:min-h-[4px] after:scale-x-1  after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform center "
 
@@ -33,13 +34,13 @@ const TextAfterAnimiation = ({text, className}: {text: string, className: string
 
 function Header({bodyRef}: {bodyRef: any}) {
     const [open, setOpen] = useState(false);
-    const firstLine = useRef(null);
-    const secondLine = useRef(null);
-    const thirdLine = useRef(null);
+    const firstLine = useRef<HTMLDivElement>(null);
+    const secondLine = useRef<HTMLDivElement>(null);
+    const thirdLine = useRef<HTMLDivElement>(null);
     const handleOpen = () => {
         if(firstLine.current == null || secondLine.current == null || thirdLine.current == null || bodyRef.current == null) return;
-        secondLine.current.style.opacity = 0;
         firstLine.current.style.transform = "rotate(45deg)  translate(7px,8px)";
+        secondLine.current.style.opacity = "0";
         thirdLine.current.style.transform = "rotate(-45deg) translate(7px,-8px)";
         firstLine.current.style.backgroundColor = "#000";
         thirdLine.current.style.backgroundColor = "#000";
@@ -50,7 +51,7 @@ function Header({bodyRef}: {bodyRef: any}) {
     }
     const handleClose = () => {
         if(firstLine.current == null || secondLine.current == null || thirdLine.current == null || bodyRef.current == null) return;
-        secondLine.current.style.opacity = 1;
+        secondLine.current.style.opacity = "1";
         firstLine.current.style.transform = "rotate(0deg) translate(0px,0px)";
         thirdLine.current.style.transform = "rotate(0deg) translate(0px,0px)";
         firstLine.current.style.backgroundColor = "#FFF";
@@ -67,6 +68,7 @@ function Header({bodyRef}: {bodyRef: any}) {
             height: "100%",
             transition: {
                 duration: 1,
+                delay: 0.1,
                 ease: "easeInOut"
             }
         },
@@ -84,7 +86,8 @@ function Header({bodyRef}: {bodyRef: any}) {
         animate: {
             height: "100%",
             transition: {
-                duration: 1.5,
+                duration: 1,
+                delay: 0.2,
                 ease: "easeInOut"
             }
         },
@@ -102,7 +105,8 @@ function Header({bodyRef}: {bodyRef: any}) {
         animate: {
             height: "100%",
             transition: {
-                duration: 2,
+                duration: 1,
+                delay: 0.3,
                 ease: "easeInOut"
             }
         },
@@ -112,6 +116,21 @@ function Header({bodyRef}: {bodyRef: any}) {
                 ease: "easeInOut"
             }
         }
+    }
+    const buttonAnimation = {
+        initial: {
+            opacity: 0,
+            y: 50
+        },
+        animate: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 1,
+                delay: 1,
+                ease: "easeInOut"
+            }
+        },
     }
 
     return (
@@ -195,7 +214,7 @@ function Header({bodyRef}: {bodyRef: any}) {
                                 variants={menuAnimation2}
                                 initial="initial"
                                 animate="animate"
-                                exit="exit" className=" h-full py-[20px] px-[50px] flex flex-col w-1/3  bg-white gap-[7px]  x:max-lg:self-center  overflow-hidden">
+                                className="h-full py-[20px] px-[50px] flex flex-col w-1/3  bg-white gap-[7px]  x:max-lg:self-center  overflow-hidden">
                                 <p className="pt-10 text-base font-medium uppercase" style={RubikFont.style}>
                                     About
                                 </p>
@@ -208,6 +227,25 @@ function Header({bodyRef}: {bodyRef: any}) {
                                 <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
                                     Careers
                                 </p>
+                                <div className="flex flex-col flex-grow">
+                                    {/* Content goes here */}
+                                </div>
+                                <div className="pb-[20px] auth-bottom flex items-center justify-center mt-auto gap-5 w-full flex-wrap">
+                                    <motion.a 
+                                        variants={buttonAnimation}
+                                        initial="initial"
+                                        animate="animate"
+                                    href={"/Login"} className="text-base font-normal uppercase hover:underline cursor-pointer px-12 py-4 rounded-sm bg-black text-white" style={RubikFont.style}>
+                                        Log in
+                                    </motion.a>
+                                    <motion.a 
+                                        variants={buttonAnimation}
+                                        initial="initial"
+                                        animate="animate"
+                                    href={"/Signup"} className="text-sm font-normal uppercase hover:underline cursor-pointer  px-12 py-4 rounded-sm border-black border-[1px]" style={RubikFont.style}>
+                                        Sign up
+                                    </motion.a>
+                                </div>
                             </motion.div>
                         </div>
                     </div>
@@ -702,8 +740,8 @@ function SliderImage({url, index}: {url: string, index: number}) {
 }
 
 function BroductScroll() {
-    const startRef = useRef<any>(null);
-    const animRef = useRef<any>(null);
+    const startRef = useRef<HTMLDivElement>(null);
+    const animRef = useRef<HTMLDivElement>(null);
 
     const data = [
         "/Slider/pexels-anna-shvets-5262741.jpg",
@@ -760,7 +798,7 @@ function BroductScroll() {
 }
 
 function TextErase({text, len, index}: {text: string, len: number, index: number}) {
-    const refChar = useRef<any>(null);
+    const refChar = useRef<HTMLDivElement>(null);
     const delay = (len - index) * 0.5;
 
     const textAnimation = {
@@ -791,7 +829,7 @@ function TextErase({text, len, index}: {text: string, len: number, index: number
 }
 
 export default function Home() {
-    const bodyRef = useRef<any>(null);
+    const bodyRef = useRef<HTMLDivElement>(null);
     useEffect( () => {
 
         const lenis = new Lenis()
@@ -831,6 +869,9 @@ export default function Home() {
                 </div>
                 <div className="seasons flex flex-col justify-start gap-3">
                     <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        Seasons
+                    </p>
+                    <p  className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
                         summer
                     </p>
                     <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
@@ -855,7 +896,7 @@ export default function Home() {
                     </p>
 
                 </div>
-                <div className="info flex flex-col justify-center gap-3">
+                <div className="info flex flex-col justify-start gap-3">
                     <p className="text-base font-bold uppercase" style={CairoFont.style}>
                         about
                     </p>
@@ -869,6 +910,20 @@ export default function Home() {
                         careers
                     </p>
                 </div>
+                <div className="social flex flex-col justify-start gap-3">
+                    <p className="text-base font-bold uppercase" style={CairoFont.style}>
+                        social
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        facebook
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        instagram
+                    </p>
+                    <p className="text-sm font-normal uppercase hover:underline cursor-pointer" style={RubikFont.style}>
+                        twitter
+                    </p>
+                </div>
             </div>
             <div className=" w-full z-10" >
             <footer className=" flex justify-between items-center py-[20px] px-[50px] text-[#FFF] x:max-lg:px-[20px] bg-black">
@@ -876,9 +931,12 @@ export default function Home() {
                     Logo
                 </p>
                 {/* add copy right */}
-                <p className="text-[#FFF] cursor-pointer font-[400] text-base uppercase relative after:w-full after:min-h-[4px] after:scale-x-0 hover:after:scale-x-100 after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform cente">
-                    © 2023 Achraf Sabbar
-                </p>
+                <div className="flex items-center gap-1 text-[#FFF] cursor-pointer font-[400] text-base uppercase relative after:w-full after:min-h-[4px] after:scale-x-0 hover:after:scale-x-100 after:center after:origin-right hover:after:origin-left after:absolute after:-bottom-1 after:bg-white after:left-0 after:duration-500 after:transition-transform cente" style={UbuntuFont.style}>
+                    Copyright © 
+                    <p className="text-xs font-normal uppercase" style={RubikFont.style}>
+                        Achraf Sabbar
+                    </p>
+                </div>
             </footer>
         </div>
         </div>
